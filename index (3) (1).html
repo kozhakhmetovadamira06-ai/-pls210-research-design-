@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Family Expectations, Political Voice · Research Design Part 1 (mina)</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍒</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FBF2DE;
+    --card:#FFFBF0;
+    --ink:#1A1210;
+    --ink-soft:#4B3630;
+    --ink-faint:#7A6055;
+    --cherry:#9E1B3C;
+    --cherry-dark:#701530;
+    --cherry-tint:#F6DCE2;
+    --rule:#E7D6AE;
+    --shadow: rgba(30,10,15,0.14);
+    --focus:#9E1B3C;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --cream:#20090F; --card:#2C1119; --ink:#F7EEDD; --ink-soft:#E3C9BE;
+      --ink-faint:#B78C90; --cherry:#F0879F; --cherry-dark:#C6597A; --cherry-tint:#3A1620;
+      --rule:#4E2530; --shadow: rgba(0,0,0,0.4); --focus:#F0879F;
+    }
+  }
+  :root[data-theme="dark"]{
+    --cream:#20090F; --card:#2C1119; --ink:#F7EEDD; --ink-soft:#E3C9BE;
+    --ink-faint:#B78C90; --cherry:#F0879F; --cherry-dark:#C6597A; --cherry-tint:#3A1620;
+    --rule:#4E2530; --shadow: rgba(0,0,0,0.4); --focus:#F0879F;
+  }
+
+  *{box-sizing:border-box;}
+  html{font-size:19px;}
+  html,body{height:100%;}
+  body{
+    margin:0; background:var(--cream); color:var(--ink);
+    font-family:"Newsreader", Georgia, "Times New Roman", serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{ font-family:"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace; }
+  b, strong{ font-weight:700; }
+
+  .deck{ position:relative; height:100dvh; overflow:hidden; perspective:1600px; }
+
+  /* cute touch: drifting quotation marks — this study is about her own words */
+  .decor{ position:fixed; inset:0; pointer-events:none; z-index:2; overflow:hidden; }
+  .petal{
+    position:absolute; top:-14vh; font-family:Georgia, "Times New Roman", serif; font-weight:700;
+    color:var(--cherry); opacity:.16; animation:drift linear infinite; will-change:transform; line-height:1;
+  }
+  @keyframes drift{ 0%{transform:translateY(-10vh) translateX(0) rotate(-6deg);} 100%{transform:translateY(114vh) translateX(30px) rotate(6deg);} }
+  @media (prefers-reduced-motion: reduce){ .decor{ display:none; } }
+
+  .chrome{
+    position:absolute; top:0; left:0; right:0; display:flex; justify-content:space-between; align-items:center;
+    padding:1.2rem clamp(1.2rem,4vw,2.5rem); font-size:0.82rem; letter-spacing:.04em; color:var(--ink-faint);
+    z-index:5; pointer-events:none;
+  }
+  .chrome .page{color:var(--ink-soft);}
+  .chrome .page b{color:var(--cherry); font-weight:700;}
+
+  .progress{ position:absolute; top:0; left:0; right:0; height:4px; background:var(--rule); z-index:6; }
+  .progress-fill{ height:100%; background:var(--cherry); width:6%; transition:width .5s ease; }
+
+  main#slides{ position:relative; height:100%; }
+
+  .slide{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    padding:clamp(5rem,10vw,6.5rem) clamp(1.6rem,7vw,4.5rem) clamp(3.2rem,6vw,4.5rem);
+    opacity:0; pointer-events:none; overflow-y:auto; background:var(--cream);
+    transform:translateX(0) rotateY(0deg);
+    transition:transform .55s cubic-bezier(.22,.61,.36,1), opacity .48s ease;
+    backface-visibility:hidden; transform-style:preserve-3d;
+  }
+  .slide.no-anim{ transition:none !important; }
+  .slide.active{ opacity:1; pointer-events:auto; transform:translateX(0) rotateY(0deg); z-index:2; }
+  .slide.enter-right{ opacity:0; transform:translateX(7%) rotateY(20deg); transform-origin:right center; }
+  .slide.enter-left{ opacity:0; transform:translateX(-7%) rotateY(-20deg); transform-origin:left center; }
+  .slide.exit-left{ opacity:0; transform:translateX(-7%) rotateY(-20deg); transform-origin:left center; }
+  .slide.exit-right{ opacity:0; transform:translateX(7%) rotateY(20deg); transform-origin:right center; }
+  @media (prefers-reduced-motion: reduce){
+    .slide{ transition:opacity .3s ease; transform:none !important; }
+  }
+
+  .col{ max-width:720px; width:100%; margin:0 auto; }
+  .col.wide{ max-width:980px; }
+
+  .kicker{ font-family:"IBM Plex Mono", monospace; font-weight:600; font-size:.92rem; letter-spacing:.05em; color:var(--cherry); margin:0 0 1.3rem; }
+  h1.big{ font-size:clamp(2.5rem,6vw,3.9rem); line-height:1.1; font-weight:600; margin:0 0 1.2rem; color:var(--ink); }
+  h2{ font-size:clamp(1.8rem,3.8vw,2.4rem); line-height:1.18; font-weight:600; margin:0 0 1.4rem; color:var(--ink); }
+  h3{ font-weight:600; color:var(--ink); }
+  p.lede{ font-size:1.32rem; line-height:1.6; color:var(--ink-soft); margin:0 0 1.7rem; max-width:58ch; }
+  .byline{ font-size:1.1rem; color:var(--ink-soft); }
+
+  ul.notes{ list-style:none; margin:0 0 1.5rem; padding:0; }
+  ul.notes li{ position:relative; padding-left:1.6rem; margin-bottom:1rem; font-size:1.24rem; line-height:1.55; color:var(--ink); }
+  ul.notes li::before{ content:"—"; position:absolute; left:0; color:var(--cherry); font-weight:700; }
+  ul.notes.plus li::before{content:"+"; color:var(--cherry);}
+  ul.notes.dot li::before{content:"•"; color:var(--cherry);}
+
+  ol.expect{ margin:0 0 1.5rem; padding:0; list-style:none; counter-reset:exp; }
+  ol.expect li{ counter-increment:exp; position:relative; padding-left:2.4rem; margin-bottom:1.1rem; font-size:1.24rem; line-height:1.55; color:var(--ink); }
+  ol.expect li::before{
+    content:counter(exp); position:absolute; left:0; top:-0.06em; font-family:"IBM Plex Mono",monospace; font-weight:600;
+    font-size:1rem; color:var(--cream); background:var(--cherry);
+    border-radius:50%; width:1.7rem; height:1.7rem; display:flex; align-items:center; justify-content:center;
+  }
+
+  .tagline{ font-style:italic; color:var(--ink-soft); font-size:1.2rem; border-left:3px solid var(--cherry); padding-left:1.2rem; margin:1.3rem 0; }
+
+  .cite-chip{
+    display:inline-block; font-family:"IBM Plex Mono", monospace; font-weight:600; font-size:.82rem;
+    color:var(--cherry); background:var(--cherry-tint); border:1.5px solid var(--cherry);
+    border-radius:999px; padding:.22rem .75rem; margin:.18rem .35rem .18rem 0;
+  }
+
+  /* generic card system */
+  .card-grid{ display:grid; grid-template-columns:1fr 1fr; gap:1.3rem; margin:1.5rem 0 1.6rem; }
+  @media (max-width:760px){ .card-grid{grid-template-columns:1fr;} }
+  .card{
+    background:var(--card); border:1px solid var(--rule); border-top:5px solid var(--cherry);
+    border-radius:6px; padding:1.3rem 1.4rem; box-shadow:0 8px 20px var(--shadow);
+  }
+  .card h3{ font-size:1.12rem; margin:0 0 .5rem; }
+  .card p{ font-size:1.05rem; line-height:1.5; margin:0; color:var(--ink-soft); }
+  .card .so-what{ margin-top:.7rem; padding-top:.6rem; border-top:1px dashed var(--rule); font-size:1.02rem; color:var(--cherry-dark); font-weight:600; line-height:1.45; }
+  .card .so-what span{ font-weight:400; color:var(--ink-soft); }
+
+  /* --- slide 4: comparison layout --- */
+  .compare{ display:grid; grid-template-columns:1fr 1fr; gap:1.6rem; margin:1.5rem 0 1.2rem; }
+  @media (max-width:760px){ .compare{grid-template-columns:1fr;} }
+  .compare .box{ padding:1.4rem 1.5rem; border-radius:6px; }
+  .compare .box.muted{ background:transparent; border:2px dashed var(--rule); }
+  .compare .box.muted h3{ color:var(--ink-faint); }
+  .compare .box.highlight{ background:var(--card); border-top:5px solid var(--cherry); border:1px solid var(--rule); border-top-width:5px; box-shadow:0 8px 20px var(--shadow); }
+  .compare .box.highlight h3{ color:var(--cherry); }
+  .compare h3{ font-family:"IBM Plex Mono", monospace; font-weight:600; font-size:.86rem; letter-spacing:.03em; margin:0 0 .8rem; }
+  .compare p{ font-size:1.16rem; line-height:1.5; margin:0 0 .8rem; color:var(--ink); }
+  .compare .small{ font-size:1rem; font-style:italic; color:var(--ink-faint); }
+  .why-row{ display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin:0 0 1.4rem; }
+  @media (max-width:760px){ .why-row{grid-template-columns:1fr;} }
+  .why-row .mini{ background:var(--cherry-tint); border-radius:6px; padding:1rem 1.1rem; font-size:1rem; line-height:1.45; color:var(--ink-soft); }
+  .why-row .mini b{ display:block; color:var(--cherry-dark); margin-bottom:.3rem; font-size:1.02rem; }
+
+  /* --- slide 5: positioning map --- */
+  .map-wrap{ display:flex; justify-content:center; margin:1.1rem 0 1.2rem; }
+  .map-wrap svg{ width:100%; max-width:640px; height:auto; }
+  .map-wrap text{ font-family:"IBM Plex Mono", monospace; }
+
+  /* --- grouped literature panels (slide 7) --- */
+  .funnel{ display:flex; align-items:stretch; gap:0; margin:1.5rem 0 1.2rem; }
+  @media (max-width:900px){ .funnel{flex-direction:column; gap:1rem;} }
+  .funnel .panel{ flex:1; background:var(--card); border:1px solid var(--rule); border-top:5px solid var(--cherry); border-radius:6px; padding:1.2rem 1.25rem; box-shadow:0 6px 16px var(--shadow); }
+  .funnel .panel.gap{ background:var(--cherry); border-color:var(--cherry-dark); }
+  .funnel .panel.gap h3, .funnel .panel.gap p, .funnel .panel.gap .so-what{ color:var(--cream); border-color:rgba(255,255,255,.35); }
+  .funnel .panel h3{ font-size:1.05rem; margin:0 0 .5rem; }
+  .funnel .panel p{ font-size:.98rem; line-height:1.45; margin:0 0 .6rem; color:var(--ink-soft); }
+  .funnel .panel .so-what{ margin-top:.6rem; padding-top:.55rem; border-top:1px dashed var(--rule); font-size:.94rem; color:var(--cherry-dark); font-weight:600; line-height:1.42; }
+  .funnel .panel .cite-list{ margin-top:.7rem; }
+  .funnel .arrow{ display:flex; align-items:center; justify-content:center; padding:0 .4rem; color:var(--ink-faint); font-size:1.5rem; }
+  @media (max-width:900px){ .funnel .arrow{ transform:rotate(90deg); padding:.1rem 0; } }
+
+  /* --- concepts grid (slide 9) --- */
+  .concepts{ display:grid; grid-template-columns:1fr 1fr; gap:1.3rem; margin:1.5rem 0 1.5rem; }
+  @media (max-width:640px){ .concepts{grid-template-columns:1fr;} }
+
+  /* --- meaning-map diagram --- */
+  .diagram-wrap{ display:flex; justify-content:center; margin:1.1rem 0 1.3rem; }
+  .diagram-wrap svg{ width:100%; max-width:580px; height:auto; }
+  .diagram-wrap text{ font-family:"IBM Plex Mono", monospace; font-weight:600; }
+  .mm-line{ fill:none; stroke:var(--cherry); stroke-opacity:.55; stroke-width:2.5; stroke-linecap:round; stroke-dasharray:340; stroke-dashoffset:340; transition:stroke-dashoffset 1.1s ease; }
+  .mm-node{ opacity:0; transform:scale(.85); transform-origin:center; transition:opacity .5s ease, transform .5s ease; }
+  .slide.active .mm-line{ stroke-dashoffset:0; }
+  .slide.active .mm-line.l2{ transition-delay:.15s; }
+  .slide.active .mm-line.l3{ transition-delay:.3s; }
+  .slide.active .mm-line.l4{ transition-delay:.45s; }
+  .slide.active .mm-node.n1{ opacity:1; transform:scale(1); transition-delay:1.0s; }
+  .slide.active .mm-node.n2{ opacity:1; transform:scale(1); transition-delay:1.15s; }
+  .slide.active .mm-node.n3{ opacity:1; transform:scale(1); transition-delay:1.3s; }
+  .slide.active .mm-node.n4{ opacity:1; transform:scale(1); transition-delay:1.45s; }
+  .slide.active .mm-node.center{ opacity:1; transform:scale(1); transition-delay:0s; }
+  .mm-pulse{ animation:mmpulse 3s ease-in-out infinite; }
+  @keyframes mmpulse{ 0%,100%{ filter:drop-shadow(0 0 0px var(--cherry)); } 50%{ filter:drop-shadow(0 0 10px var(--cherry)); } }
+  @media (prefers-reduced-motion: reduce){
+    .mm-line{ transition:none; stroke-dashoffset:0; } .mm-node{ transition:none; opacity:1; transform:scale(1); } .mm-pulse{ animation:none; }
+  }
+
+  /* --- personal slides --- */
+  .note{ background:var(--card); border-left:5px solid var(--cherry); border-radius:0 6px 6px 0; padding:1.5rem 1.7rem; box-shadow:0 8px 20px var(--shadow); }
+  .note p{ font-size:1.22rem; line-height:1.62; margin:0 0 1rem; color:var(--ink); }
+  .note p:last-child{ margin-bottom:0; }
+
+  .note-stack{ display:flex; flex-direction:column; gap:1.1rem; margin:1.4rem 0; }
+  .note-chunk{ background:var(--card); border-left:5px solid var(--cherry); border-radius:0 6px 6px 0; padding:1.15rem 1.4rem; box-shadow:0 6px 16px var(--shadow); }
+  .note-chunk .chunk-label{ font-family:"IBM Plex Mono", monospace; font-weight:600; font-size:.78rem; letter-spacing:.05em; color:var(--cherry); margin:0 0 .5rem; text-transform:uppercase; }
+  .note-chunk p{ font-size:1.14rem; line-height:1.55; margin:0; color:var(--ink); }
+
+  /* --- references --- */
+  .refs{ columns:2; column-gap:2.2rem; margin:1.4rem 0; counter-reset:ref; }
+  @media (max-width:760px){ .refs{columns:1;} }
+  .refs p{ counter-increment:ref; position:relative; padding-left:1.7rem; font-size:.96rem; line-height:1.5; margin:0 0 1rem; break-inside:avoid; color:var(--ink); }
+  .refs p::before{ content:counter(ref) "."; position:absolute; left:0; top:0; color:var(--cherry); font-weight:700; font-family:"IBM Plex Mono", monospace; font-size:.85rem; }
+  .refs p i{ font-style:italic; }
+
+  .closing h1.big{margin-bottom:.7rem;}
+  .closing .byline{display:block; margin-top:2.2rem;}
+
+  .controls{ position:absolute; bottom:1.2rem; right:clamp(1.2rem,4vw,2.5rem); display:flex; gap:.6rem; z-index:6; }
+  .controls button{
+    width:2.9rem; height:2.9rem; border-radius:50%; border:2px solid var(--cherry); background:var(--card); color:var(--cherry);
+    font-size:1.2rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center;
+    transition:background .2s ease, transform .15s ease, box-shadow .2s ease;
+  }
+  .controls button:hover{ background:var(--cherry); color:var(--cream); box-shadow:0 6px 16px var(--shadow); }
+  .controls button:active{ transform:scale(.92); }
+  .controls button:focus-visible{ outline:2px solid var(--focus); outline-offset:2px; }
+
+  .literature{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem;margin:1.3rem 0}
+  .literature article{border-top:4px solid var(--cherry);padding:1rem .8rem 0 0;display:flex;flex-direction:column}
+  .literature h3,.framework h3{color:var(--cherry-dark);font-size:1.23rem;line-height:1.2;margin:0 0 .6rem}
+  .literature p{font-size:1.13rem;line-height:1.42;margin:0 0 1rem}
+  .literature small,.source-line,.framework small{font-size:.86rem;color:var(--ink-faint);line-height:1.4}
+  .literature small{margin-top:auto}
+  .gap-box{border-left:5px solid var(--cherry);padding:1.2rem 1.7rem;background:var(--card)}
+  .gap-box p{font-size:1.35rem;line-height:1.5;margin:0 0 1rem}.gap-box p:last-child{margin:0}
+  .framework{display:grid;grid-template-columns:42% 1fr;gap:2rem;align-items:stretch}
+  .framework-question{background:var(--cherry-dark);color:#fff8ef;padding:1.6rem;display:flex;flex-direction:column;justify-content:center}
+  .framework-question h3,.framework-question small{color:#fff8ef}
+  .framework-question p{font-size:1.65rem;line-height:1.23;margin:.5rem 0 1.5rem}
+  .framework-list>div{padding:.45rem 0 .65rem;border-top:1px solid var(--rule)}
+  .framework-list p{font-size:1.04rem;line-height:1.35;margin:0}.framework-list h3{font-size:1.1rem;margin:0 0 .25rem}
+  .source-line{margin-top:.8rem}
+  .pathway{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:1.6rem 0}
+  .pathway>div{background:var(--card);border-top:5px solid var(--cherry);padding:1.4rem;min-height:9rem}
+  .pathway small{display:block;font:600 .8rem "IBM Plex Mono",monospace;color:var(--cherry);margin-bottom:1rem}
+  .pathway strong{font-size:1.45rem;line-height:1.25}
+  @media(max-width:760px){.literature,.framework,.pathway{grid-template-columns:1fr}.pathway>div{min-height:0}.framework-question p{font-size:1.3rem}}
+</style>
+</head>
+<body>
+<div class="deck">
+  <div class="decor" id="decor"></div>
+  <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="chrome">
+    <div>← → / space to move</div>
+    <div class="page mono"><b id="pageNum">01</b> / <span id="pageTotal">13</span></div>
+  </div>
+
+  <main id="slides">
+
+    <!-- 1 -->
+    <section class="slide">
+      <div class="col">
+        <p class="kicker">PLS 210 · Research Design Part 1 · Field Notebook</p>
+        <h1 class="big">Family Expectations, Political Voice</h1>
+        <p class="lede">How young women in Kazakhstan describe the role of family expectations in shaping their sense of ability to participate in or influence politics. An interpretivist study, Fall 2026.</p>
+        <p class="byline">by mina (pseudonym) · the interpretivist tradition</p>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section class="slide">
+      <div class="col">
+        <p class="kicker">The puzzle</p>
+        <h2>The old measure of ability</h2>
+        <ul class="notes">
+          <li>Political efficacy is usually measured on a scale: do you feel able to influence government, yes or no.</li>
+          <li>For a young woman weighing what her family expects of her, that "ability" may not start at the ballot box.</li>
+        </ul>
+        <p class="tagline">It may start at the dinner table — in what she is allowed to say out loud, and to whom.</p>
+        <span class="cite-chip">Ahn, 2025</span>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="slide">
+      <div class="col wide">
+        <p class="kicker">My research question</p>
+        <h1 class="big">How do young women in Kazakhstan describe the role of family expectations in shaping their sense of ability to participate in or influence politics?</h1>
+        <span class="cite-chip">Fall 2026</span>
+      </div>
+    </section>
+
+    <!-- 4: epistemology, expanded -->
+    <section class="slide">
+      <div class="col wide">
+        <p class="kicker">Why not just run a survey · epistemology</p>
+        <h2>Why interpretivism, specifically</h2>
+        <div class="compare">
+          <div class="box muted">
+            <h3>A SURVEY WOULD ASK</h3>
+            <p>"Do you feel able to influence government?" — circle one, 1 to 4.</p>
+            <p class="small">Decides in advance what "ability" means, before she gets a chance to answer.</p>
+          </div>
+          <div class="box highlight">
+            <h3>I'M ASKING INSTEAD</h3>
+            <p class="small" style="margin-bottom:.5rem;">A question I'd actually ask a respondent — not myself:</p>
+            <p>"What do you expect of yourself, as a woman — and how much of that comes from your family? Has that shaped whether you feel you could ever have a say in something political?"</p>
+            <p class="small">The expectation has to be <em>hers</em> now, even if it started with her family — not a rule she's simply following.</p>
+          </div>
+        </div>
+        <div class="why-row">
+          <div class="mini"><b>Efficacy is felt before it's measured</b>A scale can't tell me what a daughter privately concludes about her own voice.</div>
+          <div class="mini"><b>Expectation lives in meaning</b>A disapproving silence at dinner is data no survey question captures.</div>
+          <div class="mini"><b>I'm asking her to narrate a negotiation</b>A patriarchal bargain is lived and described, not simply observed.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5: positioning map -->
+
+    <!-- 5: literature -->
+    <section class="slide">
+      <div class="col wide">
+        <p class="kicker">Literature · three areas</p>
+        <h2>What other researchers have studied</h2>
+        <div class="literature">
+          <article><h3>Family and political attitudes</h3><p>Family is one place where political attitudes develop. Research also connects gender norms with women's sense of political ability.</p><small>Ahn (2025); Van Ditmars (2023); Türköz (2025)</small></article>
+          <article><h3>Gender expectations and choices</h3><p>Women may negotiate expectations about their roles instead of simply accepting or rejecting them. This gives me a way to listen for compromise and resistance.</p><small>Kandiyoti (1988); Cleuziou &amp; Direnberger (2016)</small></article>
+          <article><h3>Women and politics in Kazakhstan</h3><p>Studies examine women's political experiences, protest, and broader attitudes. They give useful context for my question.</p><small>Tourtellotte (2023); Kakabayeva (2021); Nurpeissova et al. (2026)</small></article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6: gap -->
+    <section class="slide">
+      <div class="col wide">
+        <p class="kicker">The research gap</p>
+        <h2>What I still want to understand</h2>
+        <div class="gap-box">
+          <p>We know families can shape gender expectations and political attitudes. But these studies leave room to ask <strong>how young women in Kazakhstan describe the connection themselves</strong>.</p>
+          <p>Do expectations about being a “good daughter” or “good woman” enter what they expect of themselves? Does that matter for whether they feel able to speak, participate, or influence politics?</p>
+        </div>
+        <p class="tagline">My focus is their account of the connection, including cases where they see no connection.</p>
+      </div>
+    </section>
+
+    <!-- 7: analytical concepts -->
+    <section class="slide">
+      <div class="col wide">
+        <p class="kicker">Analytical framework · what I will listen for</p>
+        <h2>Four parts of her story</h2>
+        <div class="framework">
+          <div class="framework-question">
+            <h3>My question</h3>
+            <p>How do young women describe the role of family expectations in their sense of political ability?</p>
+            <small>These ideas guide my interviews; they do not decide what participants will say.</small>
+          </div>
+          <div class="framework-list">
+            <div><h3>Family expectations</h3><p>What does her family expect a “good daughter” or “good woman” to do or avoid?</p></div>
+            <div><h3>Her own expectations</h3><p>Which of those ideas, if any, has she taken into what she expects of herself?</p></div>
+            <div><h3>Political voice</h3><p>Can she imagine speaking about politics, disagreeing, taking part, or influencing a decision?</p></div>
+            <div><h3>Negotiation</h3><p>What does she do when her own wishes and family expectations differ?</p></div>
+          </div>
+        </div>
+        <p class="source-line">Concepts informed by Van Ditmars (2023), Ahn (2025), and Kandiyoti (1988).</p>
+      </div>
+    </section>
+
+    <!-- 8: expectations -->
+    <section class="slide">
+      <div class="col wide">
+        <p class="kicker">Working expectation · open to change</p>
+        <h2>What I expect to explore</h2>
+        <div class="pathway">
+          <div><small>01 · FAMILY</small><strong>“What should a woman be like?”</strong></div>
+          <div><small>02 · HERSELF</small><strong>“What do I expect of myself?”</strong></div>
+          <div><small>03 · POLITICS</small><strong>“Do I feel I can have a say?”</strong></div>
+        </div>
+        <p class="tagline">I expect some women to connect these ideas. Others may describe support, resistance, mixed feelings, or no connection. The interviews will tell me how they make sense of it.</p>
+      </div>
+    </section>
+
+
+    <!-- 12: positionality -->
+    <section class="slide">
+      <div class="col">
+        <p class="kicker">Where I stand · positionality</p>
+        <h2>An insider, of a particular kind</h2>
+        <div class="note-stack">
+          <div class="note-chunk">
+            <p class="chunk-label">Insider</p>
+            <p>I'm a young woman in Kazakhstan myself, studying political science and international relations. Family expectations aren't something I read about — I live inside the same set of them.</p>
+          </div>
+          <div class="note-chunk">
+            <p class="chunk-label">Not fully overlapping</p>
+            <p>I haven't been through marriage or building my own family yet, so I don't carry that specific version of the pressure some of my respondents may describe. But as a PSIR student, the family expectations that sit over women in our society already shape my own sense of political agency.</p>
+          </div>
+          <div class="note-chunk">
+            <p class="chunk-label">Held open, not resolved</p>
+            <p>I'm honestly not sure whether that makes me partial, or exactly positioned to notice what an outsider would miss. I'm not resolving that before I start — I'm carrying it into the interviews as something to stay honest about.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 13: AI transparency -->
+    <section class="slide">
+      <div class="col">
+        <p class="kicker">Working with AI · transparency</p>
+        <h2>How AI helped, and where it didn't</h2>
+        <ul class="notes plus">
+          <li>Searched academic sources and sorted them into three layers: the mechanism, the region, Kazakhstan specifically.</li>
+          <li>Stress-tested whether each source actually fit an interpretivist design, and surfaced closer qualitative precedents when it didn't.</li>
+          <li>Helped draft and revise the gap statement, the literature review, and this page's design and code.</li>
+          <li>Caught and corrected its own earlier mistake — it had described one source as fieldwork when it was actually a literature review.</li>
+        </ul>
+        <ul class="notes dot">
+          <li>The research question, the topic, the paradigm, and every final interpretive call were mine from the start. No interview data here is real or simulated — none has been collected yet.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 14: reflection -->
+    <section class="slide">
+      <div class="col">
+        <p class="kicker">Not graded</p>
+        <h2>What I understand now, and what I still don't</h2>
+        <div class="note-stack">
+          <div class="note-chunk">
+            <p class="chunk-label">What I understand now</p>
+            <p>"Just asking" isn't simple. A question about political efficacy can be leading — it can quietly invite the answer I already expect to hear, without my realizing I'm doing it.</p>
+          </div>
+          <div class="note-chunk">
+            <p class="chunk-label">What I still don't</p>
+            <p>I don't fully know how to ask about this without pushing someone toward the story I've already imagined for her. Writing this proposal hasn't solved that — it's a problem I'm carrying into the interviews themselves, not one I've closed.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 15: references -->
+    <section class="slide">
+      <div class="col wide">
+        <p class="kicker">References</p>
+        <h2>All sources</h2>
+        <div class="refs">
+          <p>Ahn, S. Y. (2025). Does religion hinder women's political efficacy in Muslim-majority societies? Rethinking the role of religion, gender norms, and political engagement. <i>Asian Women, 41</i>(3), 98–116.</p>
+          <p>Cleuziou, J., &amp; Direnberger, L. (2016). Gender and nation in post-Soviet Central Asia: From national narratives to women's practices. <i>Nationalities Papers, 44</i>(2), 195–206.</p>
+          <p>Edenborg, E. (2023). Anti-gender politics as discourse coalitions: Russia's domestic and international promotion of "traditional values." <i>Problems of Post-Communism, 70</i>(2), 175–184.</p>
+          <p>Gradskova, Y. (2020). Recovering traditions? Women, gender, and the authoritarianism of "traditional values" in Russia. <i>Baltic Worlds, XIII</i>(1), 31–37.</p>
+          <p>Kakabayeva, E. (2021). <i>Navigating, carving, bargaining: Women's political subjectivities in neopatrimonial Kazakhstan</i> [Master's thesis, Central European University].</p>
+          <p>Kandiyoti, D. (1988). Bargaining with patriarchy. <i>Gender &amp; Society, 2</i>(3), 274–290.</p>
+          <p>Khairullayeva, V., Sarybayev, M., Kuzembayeva, A., Yermekbayev, A., &amp; Baikushikova, G. (2022). Gender policy in Kazakhstan. <i>Journal of International Women's Studies, 24</i>(1), Article 25.</p>
+          <p>Lipovka, A., Yerimpasheva, A., Rakhimbekova, Z., &amp; Zakirova, A. (2023). Women's participation in political leadership: Standpoints from Central Asia and Central Europe. <i>Journal of Eastern European and Central Asian Research, 10</i>(3), 376–386.</p>
+          <p>Nurpeissova, N., Tolen, Z., Zhuzeyev, S., Syzdykova, M., &amp; Abdiramanova, A. (2026). Political and social analysis of the impact of national identity and gender roles on national stability (in the context of Kazakhstan). <i>Frontiers in Sociology, 11</i>.</p>
+          <p>POMEPS. (2020). <i>Women's political representation and authoritarianism in the Arab world.</i> Project on Middle East Political Science. <i>(full citation to confirm against your original source)</i></p>
+          <p>Schwartz-Shea, P., &amp; Yanow, D. (2012). <i>Interpretive research design: Concepts and processes.</i> Routledge.</p>
+          <p>Tourtellotte, L. (2023). In search of shelter: Precarity, protest, and pronatalism among laboring women in Kazakhstan. <i>International Labor and Working-Class History, 103</i>, 81–102.</p>
+          <p>Türköz, Ş. (2025). The role of the family in shaping political attitudes: An evaluation on changing dynamics. <i>Eskişehir Osmangazi Üniversitesi Sosyal Bilimler Dergisi</i>, Aralık 2025 (Özel Sayı), 2566–2584.</p>
+          <p>Van Ditmars, M. M. (2023). Political socialization, political gender gaps and the intergenerational transmission of left-right ideology. <i>European Journal of Political Research.</i></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 16 -->
+    <section class="slide closing">
+      <div class="col">
+        <h1 class="big">Thank you</h1>
+        <p class="lede">Questions welcome, especially the ones that move my light somewhere new.</p>
+        <p class="byline">PLS 210 · Fall 2026 · mina</p>
+      </div>
+    </section>
+
+  </main>
+
+  <nav class="controls">
+    <button id="prevBtn" aria-label="Previous slide">←</button>
+    <button id="nextBtn" aria-label="Next slide">→</button>
+  </nav>
+</div>
+
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var pageNum = document.getElementById('pageNum');
+  var pageTotal = document.getElementById('pageTotal');
+  var progressFill = document.getElementById('progressFill');
+  var prevBtn = document.getElementById('prevBtn');
+  var nextBtn = document.getElementById('nextBtn');
+  var idx = 0;
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  pageTotal.textContent = slides.length;
+
+  function restore(){
+    try{
+      var saved = localStorage.getItem('rd-mina-slide');
+      if(saved !== null){
+        var n = parseInt(saved, 10);
+        if(n >= 0 && n < slides.length) idx = n;
+      }
+    }catch(e){}
+  }
+
+  function paint(){
+    pageNum.textContent = String(idx + 1).padStart(2, '0');
+    progressFill.style.width = (((idx + 1) / slides.length) * 100) + '%';
+    try{ localStorage.setItem('rd-mina-slide', idx); }catch(e){}
+  }
+
+  function init(){
+    slides.forEach(function(s, n){ s.classList.toggle('active', n === idx); });
+    paint();
+  }
+
+  function go(newIdx){
+    newIdx = Math.max(0, Math.min(slides.length - 1, newIdx));
+    if(newIdx === idx) return;
+    var dir = newIdx > idx ? 1 : -1;
+    var oldSlide = slides[idx];
+    var newSlide = slides[newIdx];
+    idx = newIdx;
+
+    if(reduced){
+      slides.forEach(function(s,n){ s.classList.toggle('active', n===idx); });
+      paint();
+      return;
+    }
+
+    newSlide.classList.add('no-anim');
+    newSlide.classList.remove('active','exit-left','exit-right','enter-left','enter-right');
+    newSlide.classList.add(dir === 1 ? 'enter-right' : 'enter-left');
+    void newSlide.offsetWidth;
+    newSlide.classList.remove('no-anim');
+
+    requestAnimationFrame(function(){
+      oldSlide.classList.remove('active');
+      oldSlide.classList.add(dir === 1 ? 'exit-left' : 'exit-right');
+      newSlide.classList.remove('enter-right','enter-left');
+      newSlide.classList.add('active');
+    });
+
+    setTimeout(function(){
+      oldSlide.classList.remove('exit-left','exit-right');
+    }, 620);
+
+    paint();
+  }
+
+  prevBtn.addEventListener('click', function(){ go(idx - 1); });
+  nextBtn.addEventListener('click', function(){ go(idx + 1); });
+
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'ArrowRight' || e.key === ' '){ e.preventDefault(); go(idx + 1); }
+    else if(e.key === 'ArrowLeft'){ e.preventDefault(); go(idx - 1); }
+  });
+
+  var touchStartX = null;
+  document.addEventListener('touchstart', function(e){ touchStartX = e.touches[0].clientX; }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    if(touchStartX === null) return;
+    var dx = e.changedTouches[0].clientX - touchStartX;
+    if(Math.abs(dx) > 50){ dx < 0 ? go(idx + 1) : go(idx - 1); }
+    touchStartX = null;
+  }, {passive:true});
+
+  // decorative floating quotation marks — a quiet nod to "in her own words"
+  if(!reduced){
+    var decor = document.getElementById('decor');
+    var marks = ['\u201C','\u201D','\u2018','\u2019'];
+    var n = 9;
+    for(var i=0;i<n;i++){
+      var el = document.createElement('span');
+      el.className = 'petal';
+      el.textContent = marks[i % marks.length];
+      el.style.left = (Math.random()*94 + 2) + 'vw';
+      el.style.animationDuration = (16 + Math.random()*12) + 's';
+      el.style.animationDelay = (Math.random()*-24) + 's';
+      el.style.fontSize = (2 + Math.random()*2.2) + 'rem';
+      decor.appendChild(el);
+    }
+  }
+
+  restore();
+  init();
+})();
+</script>
+</body>
+</html>
